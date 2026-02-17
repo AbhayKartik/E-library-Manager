@@ -1,0 +1,23 @@
+.profilecard {
+  position: fixed;
+  height: 50vh;
+  width: 400px;
+  top: 0px;
+  background-color: white;
+  right: 0px;
+  z-index: 200;
+  border-radius: 20px;
+  display: flex;
+  border: 1px solid grey;
+}
+.close {
+  position: absolute;
+  right: 25px;
+  font-size: 30px;
+}
+
+.edit {
+  position: absolute;
+  left: 5px;
+  font-size: 25px;
+}

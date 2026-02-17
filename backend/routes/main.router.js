@@ -1,0 +1,15 @@
+const express = require("express");
+const mainRouter = express.Router();
+const userRouter = require("./user.router");
+const bookRouter = require("./book.router");
+const issuedRecordRouter = require("./issueRecord.router");
+const reportRouter = require("./report.router");
+const returnedBookRouter = require("./returnedBook.router");
+const pendingIssueRouter = require("./pendingIssue.router");
+mainRouter.use(userRouter);
+mainRouter.use(pendingIssueRouter);
+mainRouter.use(bookRouter);
+mainRouter.use(issuedRecordRouter);
+mainRouter.use(reportRouter);
+mainRouter.use(returnedBookRouter);
+module.exports = mainRouter;
