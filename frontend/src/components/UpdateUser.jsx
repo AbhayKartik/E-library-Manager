@@ -45,6 +45,11 @@ const UpdateUser = ({ setIsUpdateFormOpen }) => {
 
             if (success) {
                 handleSuccess(message);
+                setTimeout(() => {
+
+                    setIsUpdateFormOpen(false)
+                }, 1000);
+
             } else {
                 handleError(message);
             }

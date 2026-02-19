@@ -72,7 +72,7 @@ function Card({ id, img, title, category, availableqty, description, imgname, ad
     }
     return (
         <div className="card" style={{ width: "18rem" }}>
-            <img src={img} className="card-img-top card-img" alt={imgname} style={{ height: "200px" }} />
+            <img src={img} className="card-img-top card-img" alt={imgname} style={{ height: "200px", objectFit: "contain" }} />
 
             <span className="badge">
                 Qty : {availableqty}

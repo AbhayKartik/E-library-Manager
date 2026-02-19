@@ -12,6 +12,7 @@ import AuthLayout from './AuthLayout'
 import App from './App'
 import MainLayout from './MainLayout'
 import HandleUser from './components/dashbords/HandleUser'
+import SeeLibrary from './components/dashbords/SeeLibrary'
 const Routes = ({ result, query,
     handleChange,
     handleInputChange,
@@ -82,6 +83,9 @@ const Routes = ({ result, query,
                 {
                     path: "/handleUser",
                     element: <HandleUser />
+                }, {
+                    path: "/libraries",
+                    element: <SeeLibrary />
                 }
             ]
         },

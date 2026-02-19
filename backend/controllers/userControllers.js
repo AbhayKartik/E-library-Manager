@@ -121,6 +121,22 @@ LEFT JOIN (
   }
 };
 
+const getAllAdmin = (req, res) => {
+  try {
+    let sql = ` SELECT * FROM admin`;
+    connection.query(sql, (err, result) => {
+      if (err) {
+        return res.json({ message: err.message });
+      } else {
+        res.json(result);
+      }
+    });
+  } catch (error) {
+    console.error("ERROR in Fetching", error.message);
+    res.status(500).send("Server Error");
+  }
+};
+
 const signUp = async (req, res) => {
   let id = uuid();
   let { isAdmin, username, email, password, address, contact } = req.body;
@@ -267,4 +283,5 @@ module.exports = {
   deleteUserProfile,
   updateUserProfile,
   getUserProfile,
+  getAllAdmin,
 };
