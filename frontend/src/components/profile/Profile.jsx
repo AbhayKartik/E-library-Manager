@@ -38,17 +38,23 @@ const Profile = ({ isAdmin, username, logout, setIsprofileOpen }) => {
                 <h2 style={{ position: "absolute", top: "195px", textDecoration: "underline", }}>{username}</h2>
                 {isAdmin == "users" ?
                     <div >
+                        <Link to={"/libraries"} style={{ textDecoration: "none", color: "black" }}>
+                            <div style={{ cursor: "pointer" }} onClick={() => setIsprofileOpen(false)}>
+                                All Libraries
+                            </div>
+                        </Link>
                         <Link to={"/Pendinguserbook"} style={{ textDecoration: "none", color: "black" }}>
                             <div style={{ cursor: "pointer" }} onClick={() => setIsprofileOpen(false)}>
-                                See Pending Books
+                                Pending Books
                             </div>
                         </Link>
 
                         <Link to={"/issuedUserBook"} style={{ textDecoration: "none", color: "black" }}>
                             <div style={{ cursor: "pointer" }} onClick={() => setIsprofileOpen(false)}>
-                                See Issued Books
+                                Issued Books
                             </div>
                         </Link>
+
 
 
                     </div> :
