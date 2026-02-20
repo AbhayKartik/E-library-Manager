@@ -13,6 +13,7 @@ import App from './App'
 import MainLayout from './MainLayout'
 import HandleUser from './components/dashbords/HandleUser'
 import SeeLibrary from './components/dashbords/SeeLibrary'
+import AdminBooks from './components/dashbords/AdminBooks'
 const Routes = ({ result, query,
     handleChange,
     handleInputChange,
@@ -86,6 +87,10 @@ const Routes = ({ result, query,
                 }, {
                     path: "/libraries",
                     element: <SeeLibrary />
+                },
+                {
+                    path: "/librarybooks/:id",
+                    element: <AdminBooks />
                 }
             ]
         },
