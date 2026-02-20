@@ -276,6 +276,23 @@ const deleteUserProfile = async (req, res) => {
   }
 };
 
+const getAdminAllBooks = async (req, res) => {
+  try {
+    let { id } = req.params;
+    let sql = `SELECT b.*,a.username AS admin_username FROM book b JOIN admin a ON b.addby = a.id WHERE addby = ?`;
+    connection.query(sql, id, (err, result) => {
+      if (err) {
+        return res.status(404).json({ message: "User Not Found" });
+      } else {
+        res.json(result);
+      }
+    });
+  } catch (error) {
+    console.error("ERROR in user profile deleting", error.message);
+    res.status(500).send("Server Error");
+  }
+};
+
 module.exports = {
   getAllUsers,
   signUp,
@@ -284,4 +301,5 @@ module.exports = {
   updateUserProfile,
   getUserProfile,
   getAllAdmin,
+  getAdminAllBooks,
 };

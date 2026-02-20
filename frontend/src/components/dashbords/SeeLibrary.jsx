@@ -1,9 +1,11 @@
 import axios from 'axios'
 import React, { useEffect, useState } from 'react'
+import { Link, useNavigate } from "react-router-dom";
 
 
 const SeeLibrary = () => {
     const [allAdmin, setAllAdmin] = useState([])
+    const navigate = useNavigate();
     useEffect(() => {
         const getAllAdmin = async () => {
             try {
@@ -16,6 +18,9 @@ const SeeLibrary = () => {
         }
         getAllAdmin()
     }, [])
+    const goToLibrary = (id) => {
+        navigate(`/librarybooks/${id}`)
+    }
     return (
         <div className="card-container">
             <h3 style={{ marginLeft: "40%" }}>All Users </h3>
@@ -35,12 +40,14 @@ const SeeLibrary = () => {
                 </thead>
                 <tbody>
                     {allAdmin.map((el) => (
-                        <tr key={el.id}>
+
+                        <tr key={el.id} style={{ cursor: "pointer" }} onClick={() => goToLibrary(el.id)} >
                             <td style={{ border: "1px solid black " }}>{el.username} </td>
                             <td style={{ border: "1px solid black " }}>{el.email} </td>
                             <td style={{ border: "1px solid black " }}>{el.contact}</td>
                             <td style={{ border: "1px solid black " }}>{el.address} </td>
                         </tr>
+
                     ))}
 
                 </tbody>

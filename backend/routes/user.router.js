@@ -4,6 +4,7 @@ const userRouter = express.Router();
 
 userRouter.get("/allusers", userController.getAllUsers);
 userRouter.get("/allAdmin", userController.getAllAdmin);
+userRouter.get("/AdminAllBook/:id", userController.getAdminAllBooks);
 userRouter.post("/signup", userController.signUp);
 userRouter.post("/login", userController.login);
 userRouter.get("/userprofile/:id", userController.getUserProfile);

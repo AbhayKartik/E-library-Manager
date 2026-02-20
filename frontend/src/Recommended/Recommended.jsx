@@ -7,9 +7,7 @@ function Recommended({ handleClick }) {
         <div>
             <h2 className="recommended-title">Recommended</h2>
             <div className="recommended-flex">
-                <Link to={"/"} style={{ textDecoration: "none", color: "black" }}>
-                    <Button title="All Books" />
-                </Link>
+                <Button onClickHandler={handleClick} value="" title="All Books" />
                 <Button onClickHandler={handleClick} value="History" title="History" />
                 <Button onClickHandler={handleClick} value="Science" title="Science" />
                 <Button onClickHandler={handleClick} value="Finance" title="Finance" />

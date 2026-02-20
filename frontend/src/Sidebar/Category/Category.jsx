@@ -8,9 +8,8 @@ function Category({ handleChange }) {
 
             <div>
                 <label className="sidebar-label-container">
-                    <Link to={"/"} style={{ textDecoration: "none", color: "black" }}>
-                        <span className="checkmark"></span>All
-                    </Link>
+                    <input type="radio" name="test" value="" onChange={handleChange} />
+                    <span className="checkmark"></span>All
                 </label>
 
                 <Input handleChange={handleChange} value="SelfHelp" title="Self-Help" name="test" />
