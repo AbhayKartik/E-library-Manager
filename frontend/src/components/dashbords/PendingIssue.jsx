@@ -63,28 +63,35 @@ const PendingIssue = () => {
                 borderCollapse: "collapse",
                 border: "1px solid black"
             }}>
-                <tr>
-                    <th style={{ border: "1px solid black " }}>Member Name</th>
-                    <th style={{ border: "1px solid black " }}>Email</th>
-                    <th style={{ border: "1px solid black " }}>Contact</th>
-                    <th style={{ border: "1px solid black " }}>Book Name</th>
-                    <th style={{ border: "1px solid black " }}>Status</th>
-                </tr>
-                {pendingIssue.length == 0 ? <h6>No Book in pending</h6> : pendingIssue.map((el) => (
-                    <tr >
-                        <td style={{ border: "1px solid black " }}>{el.username} </td>
-                        <td style={{ border: "1px solid black " }}>{el.email}</td>
-                        <td style={{ border: "1px solid black " }}>{el.contact}</td>
-                        <td style={{ border: "1px solid black " }}>{el.title}</td>
-                        {el.status == "pending" ?
-                            <td style={{ border: "1px solid black ", display: "flex", gap: "20px" }}>
+                <thead>
 
-                                <button className='btn btn-success' onClick={() => { issueBook(el.MemberID, el.BookID) }}>Issue</button>
-                                <button className='btn btn-danger' onClick={() => { rejectBook(el.MemberID, el.BookID) }}>Decline</button>
-                            </td>
-                            : <td style={{ border: "1px solid black " }}>{el.status}</td>}
+                    <tr>
+                        <th style={{ border: "1px solid black " }}>Member Name</th>
+                        <th style={{ border: "1px solid black " }}>Email</th>
+                        <th style={{ border: "1px solid black " }}>Contact</th>
+                        <th style={{ border: "1px solid black " }}>Book Name</th>
+                        <th style={{ border: "1px solid black " }}>Status</th>
                     </tr>
-                ))}
+                </thead>
+                <tbody>
+
+                    {pendingIssue.length == 0 ? <tr><td>No Book In Pending</td></tr> : pendingIssue.map((el) => (
+                        <tr >
+                            <td style={{ border: "1px solid black " }}>{el.username} </td>
+                            <td style={{ border: "1px solid black " }}>{el.email}</td>
+                            <td style={{ border: "1px solid black " }}>{el.contact}</td>
+                            <td style={{ border: "1px solid black " }}>{el.title}</td>
+                            {el.status == "pending" ?
+                                <td style={{ border: "1px solid black ", display: "flex", gap: "20px" }}>
+
+                                    <button className='btn btn-success' onClick={() => { issueBook(el.MemberID, el.BookID) }}>Issue</button>
+                                    <button className='btn btn-danger' onClick={() => { rejectBook(el.MemberID, el.BookID) }}>Decline</button>
+                                </td>
+                                : <td style={{ border: "1px solid black " }}>{el.status}</td>}
+                        </tr>
+                    ))}
+                </tbody>
+
             </table>
             <ToastContainer />
         </div>

@@ -1,16 +1,14 @@
 import axios from 'axios'
-import React, { useEffect, useState } from 'react'
-import Sidebar from './Sidebar/Sidebar'
-import Nav from './Navigation/Nav'
-import Recommended from './Recommended/Recommended'
+import { useEffect, useState } from 'react'
 import Card from './components/Card'
 
 import Routes from './Routes'
+import { useNavigate } from 'react-router-dom'
 
 const App = () => {
     const [product, setProduct] = useState([])
 
-
+    const navigate = useNavigate()
     useEffect(() => {
         const fetchBook = async () => {
             try {
@@ -21,8 +19,7 @@ const App = () => {
             }
         }
         fetchBook()
-
-    }, [])
+    }, [product])
 
     const [selectedCategory, setSelectedCategory] = useState(null)
     const [query, setQuery] = useState("")
@@ -34,10 +31,17 @@ const App = () => {
     const filteredItems = product.filter(product => product.title.toLocaleLowerCase().indexOf(query.toLocaleLowerCase()) !== -1)
 
     const handleChange = event => {
+        if (window.location.pathname != "/") {
+            navigate("/")
+        }
         setSelectedCategory(event.target.value)
     }
 
     const handleClick = event => {
+        if (window.location.pathname != "/") {
+            navigate("/")
+        }
+
         setSelectedCategory(event.target.value)
     }
 
@@ -75,10 +79,6 @@ const App = () => {
     const result = filteredData(product, selectedCategory, query,)
     return (
         <>
-            {/* <Sidebar handleChange={handleChange} />
-            <Nav query={query} handleInputChange={handleInputChange} />
-            <Recommended handleClick={handleClick} />
-            <Products result={result} /> */}
             <Routes result={result} query={query}
                 handleChange={handleChange}
                 handleInputChange={handleInputChange}

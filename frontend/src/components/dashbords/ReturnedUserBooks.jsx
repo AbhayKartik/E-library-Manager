@@ -3,23 +3,18 @@ import React from 'react'
 import { useEffect } from 'react'
 import { useState } from 'react'
 
-const IssuedBooks = () => {
-    const [issuedBook, setIssuedBook] = useState([])
-
-
+const ReturnedUserBooks = () => {
+    const [returnedBooks, setreturnedBooks] = useState([])
     useEffect(() => {
-        const getIssuedBook = async () => {
-            try {
+        const id = localStorage.getItem("userId")
 
-                let { data } = await axios.get("http://localhost:3000/record")
-                setIssuedBook(data)
-            } catch (error) {
-                console.error("geeting err in lib 48line", error)
-            }
+        const getAllIssuedBooks = async () => {
+            let { data } = await axios.get(`http://localhost:3000/return/${id}`)
+            setreturnedBooks(data)
         }
+        getAllIssuedBooks()
 
-        getIssuedBook()
-    }, [issuedBook])
+    }, [])
     return (
         <div className="card-container">
             <h3 style={{ marginLeft: "40%" }}>Issued Book </h3>
@@ -73,4 +68,4 @@ const IssuedBooks = () => {
     )
 }
 
-export default IssuedBooks
+export default ReturnedUserBooks

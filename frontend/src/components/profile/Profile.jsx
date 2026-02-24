@@ -54,6 +54,11 @@ const Profile = ({ isAdmin, username, logout, setIsprofileOpen }) => {
                                 Issued Books
                             </div>
                         </Link>
+                        <Link to={"/returnUserBook"} style={{ textDecoration: "none", color: "black" }}>
+                            <div style={{ cursor: "pointer" }} onClick={() => setIsprofileOpen(false)}>
+                                Returned Books
+                            </div>
+                        </Link>
 
 
 
