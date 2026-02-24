@@ -1,37 +1,39 @@
 const { uuid } = require("uuidv4");
 const connection = require("../dbConfig/sql");
 
-const checkDuplicate = (bookId, MemberID) => {
-  return new Promise((resolve, reject) => {
+const checkDuplicate = async (bookId, MemberID) => {
+  try {
     const sql =
       "SELECT BookID FROM pendingissue WHERE BookID = ? AND MemberID = ?";
-
-    connection.query(sql, [bookId, MemberID], (err, result) => {
-      if (err) return reject(err);
-      resolve(result.length > 0);
-    });
-  });
+    let [result] = await connection.query(sql, [bookId, MemberID]);
+    return result.affectedRows > 0;
+  } catch (error) {
+    console.error("Error Check duplicate:", error);
+    throw error;
+  }
 };
 
-const checkIsAdminIssue = (memberid) => {
-  return new Promise((resolve, reject) => {
+const checkIsAdminIssue = async (memberid) => {
+  try {
     const sql = "SELECT EXISTS (SELECT 1 FROM admin WHERE id = ?) AS id_exists";
-    connection.query(sql, [memberid], (err, result) => {
-      if (err) return reject(err);
-      resolve(result[0].id_exists);
-    });
-  });
+    let [result] = await connection.query(sql, [memberid]);
+    return result[0].id_exists;
+  } catch (error) {
+    console.error("Error check is admin:", error);
+    throw error;
+  }
 };
 
-const decqty = (id) => {
-  return new Promise((resolve, reject) => {
+const decqty = async (id) => {
+  try {
     const sql =
       "UPDATE book SET availableqty = availableqty - 1 WHERE id = ? AND availableqty > 0";
-    connection.query(sql, [id], (err, result) => {
-      if (err) return reject(err);
-      resolve(result.affectedRows > 0);
-    });
-  });
+    let [result] = await connection.query(sql, [id]);
+    return result.affectedRows > 0;
+  } catch (error) {
+    console.error("Error decqty:", error);
+    throw error;
+  }
 };
 
 const assignInPending = async (req, res) => {
@@ -51,17 +53,14 @@ const assignInPending = async (req, res) => {
       return res.json({ message: "Duplicate found" });
     }
     const sql = `INSERT INTO pendingissue (id , BookID , MemberID) VALUES (?, ?, ?)`;
-    connection.query(sql, [id, bookId, MemberID], (err, result) => {
-      if (err) {
-        res.json({ message: "Invalid Credentials" });
-        console.log(err);
-      } else {
-        decqty(bookId);
-        res.json({ success: true, message: "Pending... Wait for the issue" });
-      }
-    });
+    let [result] = await connection.query(sql, [id, bookId, MemberID]);
+    if (result.affectedRows == 1) {
+      decqty(bookId);
+    }
+    res.json({ success: true, message: "Pending... Wait for the issue" });
   } catch (error) {
     console.error("error in assiging pending", error);
+    res.status(500).json({ message: "Database error" });
   }
 };
 
@@ -91,16 +90,11 @@ JOIN admin a
     ON b.addby = a.id
     
     WHERE MemberID = ?`;
-    connection.query(sql, id, (err, result) => {
-      if (err) {
-        console.log(err);
-        return res.send("Invalid Credentials", err);
-      } else {
-        res.json(result);
-      }
-    });
+    let [result] = await connection.query(sql, id);
+    res.json(result);
   } catch (error) {
     console.error("error in get user pending", error);
+    res.status(500).json({ message: "Database error" });
   }
 };
 
@@ -116,19 +110,11 @@ const getPendingIssue = async (req, res) => {
               JOIN users m
              ON p.MemberID = m.id
               WHERE b.addby = ?`;
-    connection.query(sql, id, (err, result) => {
-      if (err) {
-        console.log(err);
-        return res.send("Invalid Credentials");
-      }
-      if (result.length == 0) {
-        res.send("Empty Pending");
-      } else {
-        res.json(result);
-      }
-    });
+    let [result] = await connection.query(sql, id);
+    res.json(result);
   } catch (error) {
     console.error("error in admin pending", error);
+    res.status(500).json({ message: "Database error" });
   }
 };
 

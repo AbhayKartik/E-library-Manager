@@ -15,30 +15,21 @@ const addNewBook = async (req, res) => {
 
     let sql = `INSERT INTO book (id, title, author, category, availableqty,description,imgname,imgurl,addby)
 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ? )`;
-    connection.query(
-      sql,
-      [
-        id,
-        title,
-        author,
-        category,
-        availableqty,
-        description,
-        title,
-        imgurl,
-        adminId,
-      ],
-      (err, result) => {
-        if (err) {
-          res.json({ message: "Something Went Wrong" });
-          return;
-        } else {
-          res.json({ success: true, message: "New book added sucuessfully" });
-        }
-      },
-    );
+    let [rows] = await connection.query(sql, [
+      id,
+      title,
+      author,
+      category,
+      availableqty,
+      description,
+      title,
+      imgurl,
+      adminId,
+    ]);
+    res.json({ success: true, message: "New book added sucuessfully" });
   } catch (error) {
     console.error("error during add book", error);
+    res.status(500).json({ message: "Database error" });
   }
 };
 
@@ -48,14 +39,12 @@ const seacrhBookByName = async (req, res) => {
 
 const getAllBooks = async (req, res) => {
   try {
-    connection.query("SELECT * FROM book", (err, result) => {
-      if (err) {
-        console.error(err);
-      }
-      res.json(result);
-    });
+    let [rows] = await connection.query("SELECT * FROM book");
+
+    res.json(rows);
   } catch (error) {
     console.error("error during get all book", error);
+    res.status(500).json({ message: "Database error" });
   }
 };
 
@@ -63,18 +52,11 @@ const getBookByID = async (req, res) => {
   try {
     let id = req.params.id;
     let sql = `SELECT * FROM book WHERE id = ?`;
-    connection.query(sql, id, (err, result) => {
-      if (err) {
-        console.error(err);
-      }
-      if (result.length == 0) {
-        res.json({ message: "No book Found" });
-      } else {
-        res.json(result);
-      }
-    });
+    let [rows] = await connection.query(sql, id);
+    res.json(rows);
   } catch (error) {
     console.error("error during get a book", error);
+    res.status(500).json({ message: "Database error" });
   }
 };
 
@@ -83,18 +65,11 @@ const updateBook = async (req, res) => {
     let { id } = req.params;
     let { title, author, description } = req.body;
     let sql = `UPDATE book SET title = ?, author = ?, description = ? WHERE id = ?`;
-    connection.query(sql, [title, author, description, id], (err, result) => {
-      if (err) {
-        console.error(err);
-      }
-      if (result.changedRows == 0) {
-        res.status(404).json({ message: "book Not Found" });
-      } else {
-        res.json({ message: "book Updated Succesfully" });
-      }
-    });
+    connection.query(sql, [title, author, description, id]);
+    res.json({ success: true, message: "book Updated Succesfully" });
   } catch (error) {
     console.error("error during update book", error);
+    res.status(500).json({ message: "Database error" });
   }
 };
 
@@ -102,18 +77,11 @@ const deleteBookById = async (req, res) => {
   try {
     let { id, addby } = req.params;
     let sql = `DELETE FROM book WHERE id = ? AND addby = ?`;
-    connection.query(sql, [id, addby], (err, result) => {
-      if (err) {
-        console.error(err);
-      }
-      if (result.affectedRows == 0) {
-        res.json({ message: "You Can''t Delete this book" });
-      } else {
-        res.json({ success: true, message: "Book Deleted" });
-      }
-    });
+    connection.query(sql, [id, addby]);
+    res.json({ success: true, message: "Book Deleted" });
   } catch (error) {
     console.error("error during delete book", error);
+    res.status(500).json({ message: "Database error" });
   }
 };
 

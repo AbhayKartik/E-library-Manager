@@ -28,11 +28,11 @@ const IssueBookUser = () => {
         getIssue()
     }, [issue])
 
-    const returnBook = async (bookid) => {
+    const returnBook = async (bookid, title, email, username) => {
         try {
             let id = localStorage.getItem("userId")
 
-            let { data } = await axios.post(`http://localhost:3000/return/${id}`, { bookid })
+            let { data } = await axios.post(`http://localhost:3000/return/${id}`, { bookid, title, email, username })
 
             let { success, message } = data
             if (success) {
@@ -63,7 +63,7 @@ const IssueBookUser = () => {
                         <th style={{ border: "1px solid black " }}>Email</th>
                         <th style={{ border: "1px solid black " }}>Issued</th>
                         <th style={{ border: "1px solid black " }}>Due Date</th>
-                        <th style={{ border: "1px solid black " }}>Return</th>
+                        <th style={{ border: "1px solid black " }}>Return Dated</th>
                         <th style={{ border: "1px solid black " }}>Fine</th>
                     </tr>
                 </thead>
@@ -89,7 +89,7 @@ const IssueBookUser = () => {
                                 day: "2-digit",
                                 month: "short",
                                 year: "numeric",
-                            }) : <button onClick={() => returnBook(el.id)} className='btn btn-success'>Return</button>}</td>
+                            }) : <button onClick={() => returnBook(el.id, el.title, el.email, el.username)} className='btn btn-success'>Return</button>}</td>
                             <td style={{ border: "1px solid black " }}>{el.Fine}</td>
 
                         </tr>

@@ -19,19 +19,11 @@ JOIN book b
     ON i.BookID = b.id
 JOIN users m
     ON i.MemberID = m.id;`;
-    connection.query(sql, (err, result) => {
-      if (err) {
-        console.log("got err", err);
-      }
-
-      if (result.length == 0) {
-        res.json({ message: "Empty Record" });
-      } else {
-        res.json(result);
-      }
-    });
+    let [rows] = await connection.query(sql);
+    res.json(rows);
   } catch (error) {
     console.error("Error in get all issue", error);
+    res.status(500).json({ message: "Database error" });
   }
 };
 
@@ -56,38 +48,35 @@ JOIN admin m
     WHERE MemberID = ?`;
     // let sql = `SELECT * FROM issuerecord WHERE MemberID = ?`;
 
-    connection.query(sql, userId, (err, result) => {
-      if (err) {
-        console.log("error in getrecord if ", err);
-      }
-
-      res.json(result);
-    });
+    let [rows] = await connection.query(sql, userId);
+    res.json(rows);
   } catch (error) {
     console.error("Error in get all issue", error);
+    res.status(500).json({ message: "Database error" });
   }
 };
 
-const setToIssued = (bookId) => {
-  return new Promise((resolve, reject) => {
-    const sql = "UPDATE pendingissue SET status = 'issued' WHERE BookID = ?";
+const setToIssued = async (bookId) => {
+  const sql = "UPDATE pendingissue SET status = 'issued' WHERE BookID = ?";
 
-    connection.query(sql, [bookId], (err, result) => {
-      if (err) return reject(err);
-      resolve(result.affectedRows > 0);
-    });
-  });
+  try {
+    const [result] = await connection.query(sql, [bookId]);
+    return result.affectedRows > 0;
+  } catch (error) {
+    console.error("Error updating issue status:", error);
+    throw error;
+  }
 };
 
-const setTorejected = (bookId) => {
-  return new Promise((resolve, reject) => {
-    const sql = "UPDATE pendingissue SET status = 'rejected' WHERE BookID = ?";
-
-    connection.query(sql, [bookId], (err, result) => {
-      if (err) return reject(err);
-      resolve(result.affectedRows > 0);
-    });
-  });
+const setTorejected = async (bookId) => {
+  const sql = "UPDATE pendingissue SET status = 'rejected' WHERE BookID = ?";
+  try {
+    const [result] = await connection.query(sql, [bookId]);
+    return result.affectedRows > 0;
+  } catch (error) {
+    console.error("Error updating rejected status:", error);
+    throw error;
+  }
 };
 
 const issueRecord = async (req, res) => {
@@ -104,18 +93,8 @@ const issueRecord = async (req, res) => {
 
     if (isIssue) {
       await setToIssued(bookID);
-
       let sql = `INSERT INTO issuerecord (id , BookID,MemberID, IssueDate, DueDate) VALUES (?, ?, ?, ?, ?)`;
-      connection.query(
-        sql,
-        [id, bookID, MemberID, issueDate, dueDate],
-        (err, result) => {
-          if (err) {
-            console.log("error in issue", err);
-          }
-        },
-      );
-
+      await connection.query(sql, [id, bookID, MemberID, issueDate, dueDate]);
       res.json({ success: true, message: "Book Issued Successfully" });
     } else {
       await setTorejected(bookID);
@@ -123,6 +102,7 @@ const issueRecord = async (req, res) => {
     }
   } catch (error) {
     console.error("Error in issue", error);
+    res.status(500).json({ message: "Database error" });
   }
 };
 

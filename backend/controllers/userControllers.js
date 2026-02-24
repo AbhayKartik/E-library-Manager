@@ -4,66 +4,75 @@ const bcrypt = require("bcryptjs");
 const { uuid } = require("uuidv4");
 const connection = require("../dbConfig/sql");
 
-const foundUser = (username, email, contact) => {
-  return new Promise((resolve, reject) => {
+const foundUser = async (username, email, contact) => {
+  try {
     const sql = `
       SELECT username FROM users WHERE username = ? OR email = ? OR contact = ?
       UNION
       SELECT username FROM admin WHERE username = ? OR email = ? OR contact = ?
     `;
+    let [result] = await connection.query(sql, [
+      username,
+      email,
+      contact,
+      username,
+      email,
+      contact,
+    ]);
 
-    connection.query(
-      sql,
-      [username, email, contact, username, email, contact],
-      (err, result) => {
-        if (err) {
-          console.log("found");
-          reject(err);
-          return;
-        }
-
-        resolve(result.length > 0); // true or false
-      },
-    );
-  });
+    return result.length > 0;
+  } catch (error) {
+    console.error("Error set Fine:", error);
+    throw error;
+  }
 };
 
 const deleteUser = async (id) => {
-  const deleteUserSQL = `DELETE FROM users WHERE id = ?`;
-  const deleteAdminSQL = `DELETE FROM admin WHERE id = ?`;
+  const deleteUserSQL = "DELETE FROM users WHERE id = ?";
+  const deleteAdminSQL = "DELETE FROM admin WHERE id = ?";
 
-  return new Promise((resolve, reject) => {
-    connection.query(deleteUserSQL, [id], (err, res1) => {
-      if (err) return reject(err);
+  const conn = await connection.getConnection();
 
-      connection.query(deleteAdminSQL, [id], (err, res2) => {
-        if (err) return reject(err);
+  try {
+    await conn.beginTransaction();
 
-        resolve(res1.affectedRows + res2.affectedRows);
-      });
-    });
-  });
+    const [res1] = await conn.query(deleteUserSQL, [id]);
+    const [res2] = await conn.query(deleteAdminSQL, [id]);
+
+    await conn.commit();
+
+    return res1.affectedRows + res2.affectedRows;
+  } catch (error) {
+    await conn.rollback();
+    console.error("Delete user failed:", error);
+    throw error;
+  } finally {
+    conn.release();
+  }
 };
 
 const findUser = async (id) => {
-  const findUserSQL = `SELECT * FROM users WHERE id = ?`;
-  const findAdminSQL = `SELECT * FROM admin WHERE id = ?`;
+  const findUserSQL = "SELECT * FROM users WHERE id = ?";
+  const findAdminSQL = "SELECT * FROM admin WHERE id = ?";
 
-  return new Promise((resolve, reject) => {
-    connection.query(findUserSQL, [id], (err, res1) => {
-      if (err) return reject(err);
+  try {
+    const [userRows] = await connection.query(findUserSQL, [id]);
 
-      connection.query(findAdminSQL, [id], (err, res2) => {
-        if (err) return reject(err);
+    if (userRows.length > 0) {
+      return userRows;
+    }
 
-        if (res1.length > 0) {
-          resolve(res1);
-        } else {
-          resolve(res2);
-        }
-      });
-    });
-  });
+    const [adminRows] = await connection.query(findAdminSQL, [id]);
+
+    if (adminRows.length > 0) {
+      return adminRows;
+    }
+    console.log(userRows, adminRows);
+    return null;
+  } catch (error) {
+    console.error("Find user error:", error);
+    throw error;
+  }
 };
 
 const getAllUsers = async (req, res) => {
@@ -109,28 +118,19 @@ LEFT JOIN (
 ) ir
     ON u.id = ir.MemberID;
 `;
-    connection.query(sql, (err, result) => {
-      if (err) {
-        console.log(err);
-      }
-      res.json(result);
-    });
+    let [result] = await connection.query(sql);
+    res.json(result);
   } catch (error) {
     console.error("ERROR in Fetching", error.message);
     res.status(500).send("Server Error");
   }
 };
 
-const getAllAdmin = (req, res) => {
+const getAllAdmin = async (req, res) => {
   try {
     let sql = ` SELECT * FROM admin`;
-    connection.query(sql, (err, result) => {
-      if (err) {
-        return res.json({ message: err.message });
-      } else {
-        res.json(result);
-      }
-    });
+    let [result] = await connection.query(sql);
+    res.json(result);
   } catch (error) {
     console.error("ERROR in Fetching", error.message);
     res.status(500).send("Server Error");
@@ -154,16 +154,14 @@ const signUp = async (req, res) => {
     const sql = `INSERT INTO ${isAdmin} (id, username, email, password, address, contact)
 VALUES (?, ?, ?, ?, ?, ?)`;
 
-    connection.query(
-      sql,
-      [id, username, email, hashedPassword, address, contact],
-      (err, result) => {
-        if (err) {
-          console.error(err);
-          return;
-        }
-      },
-    );
+    await connection.query(sql, [
+      id,
+      username,
+      email,
+      hashedPassword,
+      address,
+      contact,
+    ]);
 
     const token = jwt.sign({ id: id }, process.env.JWT_SECRET_KEY, {
       expiresIn: "1h",
@@ -181,39 +179,80 @@ VALUES (?, ?, ?, ?, ?, ?)`;
   }
 };
 
+// const login = async (req, res) => {
+//   const { isAdmin, email, password } = req.body;
+//   try {
+//     const sql = ` SELECT * FROM ${isAdmin} WHERE email = ? `;
+
+//     connection.query(sql, email, async (err, result) => {
+//       if (err) {
+//         console.error(err);
+//         return;
+//       }
+//       if (result.length == 0) {
+//         return res.status(404).json({ message: "Invalid Credentials!" });
+//       }
+
+//       const isMatch = await bcrypt.compare(password, result[0].password);
+//       if (!isMatch) {
+//         return res.status(404).json({ message: "Invalid Credentials!" });
+//       }
+//       const token = jwt.sign({ id: result[0].id }, process.env.JWT_SECRET_KEY, {
+//         expiresIn: "1h",
+//       });
+//       res.json({
+//         success: true,
+//         message: "User logged in succesfully",
+//         token,
+//         userId: result[0].id,
+//         username: result[0].username,
+//         isAdmin,
+//       });
+//     });
+//   } catch (error) {
+//     console.error("ERROR in login", error.message);
+//     res.status(500).send("Server Error");
+//   }
+// };
+
 const login = async (req, res) => {
   const { isAdmin, email, password } = req.body;
+
   try {
-    const sql = ` SELECT * FROM ${isAdmin} WHERE email = ? `;
+    // ✅ Whitelist table names (PREVENT SQL INJECTION)
+    const table = isAdmin === "admin" ? "admin" : "users";
 
-    connection.query(sql, email, async (err, result) => {
-      if (err) {
-        console.error(err);
-        return;
-      }
-      if (result.length == 0) {
-        return res.status(404).json({ message: "Invalid Credentials!" });
-      }
+    const sql = `SELECT * FROM ${table} WHERE email = ?`;
+    const [rows] = await connection.query(sql, [email]);
 
-      const isMatch = await bcrypt.compare(password, result[0].password);
-      if (!isMatch) {
-        return res.status(404).json({ message: "Invalid Credentials!" });
-      }
-      const token = jwt.sign({ id: result[0].id }, process.env.JWT_SECRET_KEY, {
-        expiresIn: "1h",
-      });
-      res.json({
-        success: true,
-        message: "User logged in succesfully",
-        token,
-        userId: result[0].id,
-        username: result[0].username,
-        isAdmin,
-      });
+    if (rows.length === 0) {
+      return res.status(401).json({ message: "Invalid credentials" });
+    }
+
+    const user = rows[0];
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(401).json({ message: "Invalid credentials" });
+    }
+
+    const token = jwt.sign(
+      { id: user.id, role: table },
+      process.env.JWT_SECRET_KEY,
+      { expiresIn: "1h" },
+    );
+
+    res.json({
+      success: true,
+      message: "User logged in successfully",
+      token,
+      userId: user.id,
+      username: user.username,
+      isAdmin: table === "admin",
     });
   } catch (error) {
-    console.error("ERROR in login", error.message);
-    res.status(500).send("Server Error");
+    console.error("Login error:", error);
+    res.status(500).json({ message: "Server error" });
   }
 };
 
@@ -239,20 +278,18 @@ const updateUserProfile = async (req, res) => {
       updateField = hashedPassword;
     }
     const sql = `UPDATE ${isAdmin} SET email=?, password=?, address=?, contact=? WHERE id=?`;
-    connection.query(
-      sql,
-      [email, updateField, address, contact, currentUserID],
-      (err, result) => {
-        if (err) {
-          console.log("err in if", err);
-        }
-        if (result.changedRows == 0) {
-          res.status(404).json({ message: "User Not Found" });
-        } else {
-          res.json({ success: true, message: "User Updated Succesfully" });
-        }
-      },
-    );
+    let [result] = await connection.query(sql, [
+      email,
+      updateField,
+      address,
+      contact,
+      currentUserID,
+    ]);
+    if (result.changedRows == 0) {
+      res.status(404).json({ message: "User Not Found" });
+    } else {
+      res.json({ success: true, message: "User Updated Succesfully" });
+    }
   } catch (error) {
     console.error("ERROR in user profile updating", error.message);
     res.status(500).send("Server Error");
@@ -280,13 +317,8 @@ const getAdminAllBooks = async (req, res) => {
   try {
     let { id } = req.params;
     let sql = `SELECT b.*,a.username AS admin_username FROM book b JOIN admin a ON b.addby = a.id WHERE addby = ?`;
-    connection.query(sql, id, (err, result) => {
-      if (err) {
-        return res.status(404).json({ message: "User Not Found" });
-      } else {
-        res.json(result);
-      }
-    });
+    let [result] = await connection.query(sql, id);
+    res.json(result);
   } catch (error) {
     console.error("ERROR in user profile deleting", error.message);
     res.status(500).send("Server Error");

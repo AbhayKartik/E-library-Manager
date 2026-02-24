@@ -26,6 +26,7 @@ function Nav({ query, handleInputChange }) {
             const userId = localStorage.getItem("userId")
             try {
                 let { data } = await axios.get(`http://localhost:3000/userprofile/${userId}`)
+                console.log("into nav", data)
                 setUserName(data.username)
 
             } catch (error) {
