@@ -18,7 +18,7 @@ const IssueBookUser = () => {
         const getIssue = async () => {
             let id = localStorage.getItem("userId")
             try {
-                let { data } = await axios.get(`http://localhost:3000/record/${id}`)
+                let { data } = await axios.get(`https://e-library-manager.vercel.app/record/${id}`)
                 setIssue(data)
 
             } catch (error) {
@@ -32,7 +32,7 @@ const IssueBookUser = () => {
         try {
             let id = localStorage.getItem("userId")
 
-            let { data } = await axios.post(`http://localhost:3000/return/${id}`, { bookid, title, email, username })
+            let { data } = await axios.post(`https://e-library-manager.vercel.app/return/${id}`, { bookid, title, email, username })
 
             let { success, message } = data
             if (success) {

@@ -9,7 +9,7 @@ const AdminBooks = () => {
 
     useEffect(() => {
         const GetAdminData = async () => {
-            let { data } = await axios.get(`http://localhost:3000/AdminAllBook/${id}`)
+            let { data } = await axios.get(`https://e-library-manager.vercel.app/AdminAllBook/${id}`)
             setLibraryBooks(data)
 
             setAdminName(data[0].admin_username)

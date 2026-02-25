@@ -10,7 +10,7 @@ const SeeLibrary = () => {
         const getAllAdmin = async () => {
             try {
 
-                let { data } = await axios.get("http://localhost:3000/allAdmin")
+                let { data } = await axios.get("https://e-library-manager.vercel.app/allAdmin")
                 setAllAdmin(data)
             } catch (error) {
                 console.log(error)

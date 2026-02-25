@@ -12,7 +12,7 @@ const App = () => {
     useEffect(() => {
         const fetchBook = async () => {
             try {
-                const { data } = await axios.get("http://localhost:3000/allbooks")
+                const { data } = await axios.get("https://e-library-manager.vercel.app/allbooks")
                 setProduct(data)
             } catch (error) {
                 console.error("error during fetching repos", error)

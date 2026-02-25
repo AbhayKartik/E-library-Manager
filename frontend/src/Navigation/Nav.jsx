@@ -25,7 +25,7 @@ function Nav({ query, handleInputChange }) {
         const getUser = async () => {
             const userId = localStorage.getItem("userId")
             try {
-                let { data } = await axios.get(`http://localhost:3000/userprofile/${userId}`)
+                let { data } = await axios.get(`https://e-library-manager.vercel.app/userprofile/${userId}`)
                 console.log("into nav", data)
                 setUserName(data.username)
 

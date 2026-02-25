@@ -11,7 +11,7 @@ const IssuedBooks = () => {
         const getIssuedBook = async () => {
             try {
 
-                let { data } = await axios.get("http://localhost:3000/record")
+                let { data } = await axios.get("https://e-library-manager.vercel.app/record")
                 setIssuedBook(data)
             } catch (error) {
                 console.error("geeting err in lib 48line", error)

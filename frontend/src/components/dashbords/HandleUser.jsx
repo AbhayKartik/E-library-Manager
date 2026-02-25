@@ -7,7 +7,7 @@ const HandleUser = () => {
         const getAllusers = async () => {
             try {
 
-                let { data } = await axios.get("http://localhost:3000/allusers")
+                let { data } = await axios.get("https://e-library-manager.vercel.app/allusers")
                 setAllUsers(data)
             } catch (error) {
                 console.log(error)
