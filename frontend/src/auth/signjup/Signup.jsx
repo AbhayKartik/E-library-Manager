@@ -4,7 +4,7 @@ import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import { useAuth } from "../../Authcontext"
 const Signup = () => {
-    let SignUpUrl = "http://localhost:3000/signup"
+    let SignUpUrl = "https://e-library-manager.vercel.app/signup"
     const navigate = useNavigate();
     let [inputValue, setInputValue] = useState({
         email: "",

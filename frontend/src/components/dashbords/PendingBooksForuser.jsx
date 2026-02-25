@@ -10,7 +10,7 @@ const PendingBooksForuser = () => {
         const getPendingIssue = async () => {
             let id = localStorage.getItem("userId")
             try {
-                let { data } = await axios.get(`http://localhost:3000/pendingforuser/${id}`)
+                let { data } = await axios.get(`https://e-library-manager.vercel.app/pendingforuser/${id}`)
                 setPendingIssue(data)
 
             } catch (error) {

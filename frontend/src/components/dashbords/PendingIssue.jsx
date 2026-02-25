@@ -12,7 +12,7 @@ const PendingIssue = () => {
         const getPendingIssue = async () => {
             let id = localStorage.getItem("userId")
             try {
-                let { data } = await axios.get(`http://localhost:3000/pending/${id}`)
+                let { data } = await axios.get(`https://e-library-manager.vercel.app/pending/${id}`)
                 setPendingIssue(data)
 
             } catch (error) {
@@ -31,7 +31,7 @@ const PendingIssue = () => {
         });
     const issueBook = async (memberid, bookid) => {
         try {
-            let { data } = await axios.post(`http://localhost:3000/record/${bookid}`, { MemberID: memberid, isIssue: true })
+            let { data } = await axios.post(`https://e-library-manager.vercel.app/record/${bookid}`, { MemberID: memberid, isIssue: true })
             let { success, message } = data
             if (success) {
                 handleSuccess(message)
@@ -45,7 +45,7 @@ const PendingIssue = () => {
 
     const rejectBook = async (memberid, bookid) => {
         try {
-            let { data } = await axios.post(`http://localhost:3000/record/${bookid}`, { MemberID: memberid, isIssue: false })
+            let { data } = await axios.post(`https://e-library-manager.vercel.app/record/${bookid}`, { MemberID: memberid, isIssue: false })
             let { message } = data
 
             handleError(message)
