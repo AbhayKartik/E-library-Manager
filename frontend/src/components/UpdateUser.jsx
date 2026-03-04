@@ -5,7 +5,7 @@ import { toast, ToastContainer } from 'react-toastify';
 
 const UpdateUser = ({ setIsUpdateFormOpen }) => {
     let id = localStorage.getItem("userId")
-    let SignUpUrl = `http://localhost:3000/updateuser/${id}`
+    let SignUpUrl = `https://e-library-manager.vercel.app/updateuser/${id}`
 
     let [inputValue, setInputValue] = useState({
         email: "",
