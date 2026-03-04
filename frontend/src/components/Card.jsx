@@ -25,7 +25,7 @@ function Card({ id, img, title, category, availableqty, description, imgname, ad
     const deleteBook = async () => {
         try {
 
-            let { data } = await axios.delete(`http://localhost:3000/book/${id}/${MemberID}`)
+            let { data } = await axios.delete(`https://e-library-manager.vercel.app/book/${id}/${MemberID}`)
             const { success, message } = data;
             if (success) {
                 handleSuccess(message);
@@ -49,7 +49,7 @@ function Card({ id, img, title, category, availableqty, description, imgname, ad
     const setToPending = async () => {
         try {
             const { data } = await axios.post(
-                `http://localhost:3000/pending/${id}`,
+                `https://e-library-manager.vercel.app/pending/${id}`,
                 { MemberID },
             );
             const { success, message } = data;
