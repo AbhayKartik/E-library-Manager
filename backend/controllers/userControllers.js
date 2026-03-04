@@ -122,7 +122,7 @@ LEFT JOIN (
     res.json(result);
   } catch (error) {
     console.error("ERROR in Fetching", error.message);
-    res.status(500).send("Server Error");
+    res.status(500).send("All users Error");
   }
 };
 
@@ -175,7 +175,7 @@ VALUES (?, ?, ?, ?, ?, ?)`;
     });
   } catch (error) {
     console.error("ERROR in Sign up", error.message);
-    res.status(500).send("Server Error");
+    res.status(500).send("Signup Error");
   }
 };
 
@@ -229,7 +229,7 @@ const login = async (req, res) => {
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
-    const user = rows;
+    const user = rows[0];
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
@@ -251,8 +251,8 @@ const login = async (req, res) => {
       isAdmin: table === "admin",
     });
   } catch (error) {
-    console.error("Login error:", error);
-    res.status(500).json({ message: "Server error" });
+    console.log("Login error:", error);
+    res.status(500).json({ message: "Login error" });
   }
 };
 
@@ -263,7 +263,7 @@ const getUserProfile = async (req, res) => {
     res.json(data[0]);
   } catch (error) {
     console.error("ERROR in user profile", error.message);
-    res.status(500).send("Server Error");
+    res.status(500).send("user profile Error");
   }
 };
 
@@ -292,7 +292,7 @@ const updateUserProfile = async (req, res) => {
     }
   } catch (error) {
     console.error("ERROR in user profile updating", error.message);
-    res.status(500).send("Server Error");
+    res.status(500).send("update user Error");
   }
 };
 
@@ -321,7 +321,7 @@ const getAdminAllBooks = async (req, res) => {
     res.json(result);
   } catch (error) {
     console.error("ERROR in user profile deleting", error.message);
-    res.status(500).send("Server Error");
+    res.status(500).send("admin book Error");
   }
 };
 
